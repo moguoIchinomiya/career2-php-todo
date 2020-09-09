@@ -50,5 +50,5 @@ class Todo
         //     echo 'title: ' . $row['title'] . 'due_date: ' . $row['due_date'];
         //     echo '<br>';
         }
-    }
+    
 }
