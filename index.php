@@ -4,7 +4,13 @@ require_once './todo.php';
 $todo = new Todo();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $todo->post($_POST['title'], $_POST['due_date']);
+    if (isset($_POST["method"]) && $_POST["method"] === "DELETE") {
+        $todo->delete();
+    } elseif (isset($_POST["method"]) && $_POST["method"] === "UPDATE") {
+        $todo->update($_POST["todo_id"], $_POST['status']);
+    } else {
+        $todo->post($_POST['title'], $_POST['due_date']);
+    }
 }
 ?>
 <!DOCTYPE>
@@ -37,30 +43,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <br><br>
             <input type="hidden" name="token" value="<?php echo $_SESSION['token']; ?>">
             <input class="btn btn-primary"  type="submit" name="btn" value="TODOを作成する">
-            <input type="submit" name="output" value="タスクの表示">
         </form>
 
         <hr>
 
-        <h2 class="text-muted py-3">やることリスト</h2>
-
-        <?php 
-        $todo_list = $todo -> getList();
-        var_dump($todo_list);
+        <h2 class="text-muted py-3">やること一覧</h2>
+        <form method="POST" action="<?php print($_SERVER['PHP_SELF']) ?>">
+            <input type="hidden" name="method" value="DELETE">
+            <button class="btn btn-danger" type="submit">TODOを全削除する</button>
+        </form>
+        <?php
+        $todo_list = $todo->getList();
         ?>
         <table class="table">
             <thead>
-                <tr>
-                    <th>タイトル</th>
-                    <th>期限</th>
-                    <th>状態</th>
-                    <th>更新</th>
-                </tr>
+            <tr>
+                <th>タイトル</th>
+                <th>期限</th>
+                <th>状態</th>
+                <th>更新</th>
+            </tr>
             </thead>
             <tbody>
             <?php
-                foreach ($todo_list as $todo) {
-            ?>
+            foreach ($todo_list as $todo) {
+                ?>
                 <tr>
                     <form method="POST" action="<?php print($_SERVER['PHP_SELF']) ?>">
                         <td><?=$todo['title']; ?></td>
@@ -88,11 +95,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
             ?>
             </tbody>
-        </table> 
+        </table>
     </div>
 </div>
 
-<!-- a -->
 <!-- JS, Popper.js, and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
